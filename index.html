@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEAUTYX — Salon & Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b060d;
+    --bg2:#170b1c;
+    --bg3:#1f0f26;
+    --fg:#f9f2e9;
+    --muted:#b9a3b3;
+    --magenta:#ff2e88;
+    --magenta-dim:#c91f6a;
+    --gold:#d4af37;
+    --gold-soft:#e9d18a;
+    --blush:#ffd6e8;
+    --line: rgba(249,242,233,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  ::selection{background:var(--magenta);color:var(--fg);}
+
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Poppins',sans-serif;
+    overflow-x:hidden;
+    cursor:none;
+  }
+  a, button{cursor:none;}
+
+  h1,h2,h3, .display{
+    font-family:'Bodoni Moda', serif;
+    font-weight:600;
+  }
+
+  img{max-width:100%;display:block;}
+
+  /* ============ CUSTOM CURSOR ============ */
+  #cursor-dot, #cursor-ring{
+    position:fixed;
+    top:0;left:0;
+    pointer-events:none;
+    z-index:9999;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    will-change:transform;
+  }
+  #cursor-dot{
+    width:8px;height:8px;
+    background:var(--magenta);
+    box-shadow:0 0 12px 2px var(--magenta);
+    transition: width .25s, height .25s, background .25s;
+  }
+  #cursor-ring{
+    width:38px;height:38px;
+    border:1px solid var(--gold);
+    transition: width .35s cubic-bezier(.2,1,.3,1), height .35s cubic-bezier(.2,1,.3,1), border-color .35s, background .35s, opacity .35s;
+  }
+  #cursor-ring.hover{
+    width:74px;height:74px;
+    background:rgba(212,175,55,0.08);
+    border-color:var(--magenta);
+  }
+  #cursor-ring.text{
+    width:6px;height:60px;
+    border-radius:3px;
+    border-color:var(--magenta);
+  }
+  canvas#sparkle{position:fixed;inset:0;pointer-events:none;z-index:9998;}
+  @media(hover:none){
+    #cursor-dot,#cursor-ring,canvas#sparkle{display:none;}
+    body,a,button{cursor:auto;}
+  }
+
+  /* ============ PRELOADER ============ */
+  #preloader{
+    position:fixed;inset:0;z-index:10000;
+    background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;
+    gap:1.2rem;
+  }
+  #preloader .pre-word{
+    font-family:'Bodoni Moda',serif;
+    font-size:clamp(2.5rem,8vw,6rem);
+    letter-spacing:.08em;
+    overflow:hidden;
+    display:flex;
+  }
+  #preloader .pre-word span{
+    display:inline-block;
+    transform:translateY(110%);
+    animation:riseUp .8s cubic-bezier(.2,1,.3,1) forwards;
+  }
+  @keyframes riseUp{to{transform:translateY(0);}}
+  #preloader .bar{
+    width:220px;height:1px;background:var(--line);
+    position:relative;overflow:hidden;
+  }
+  #preloader .bar::after{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:0%;
+    background:var(--gold);
+    animation:loadbar 1.6s ease forwards;
+  }
+  @keyframes loadbar{to{width:100%;}}
+  #preloader.done{
+    animation:fadeOutPre .7s ease forwards;
+  }
+  @keyframes fadeOutPre{to{opacity:0;visibility:hidden;}}
+
+  /* ============ NAV ============ */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:500;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1.6rem clamp(1.2rem,5vw,3.5rem);
+    mix-blend-mode:difference;
+  }
+  .logo{
+    font-family:'Bodoni Moda',serif;
+    font-size:1.4rem;letter-spacing:.15em;
+    color:var(--fg);
+    text-decoration:none;
+  }
+  .logo em{color:var(--magenta);font-style:normal;}
+  nav ul{list-style:none;display:flex;gap:2.4rem;align-items:center;}
+  nav a{
+    color:var(--fg);text-decoration:none;
+    font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;
+    position:relative;
+  }
+  nav a::after{
+    content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;
+    background:var(--fg);transition:width .35s ease;
+  }
+  nav a:hover::after{width:100%;}
+  .nav-book-btn{
+    border:1px solid var(--fg);padding:.55rem 1.2rem;
+    font-size:.72rem !important;letter-spacing:.14em;
+    transition:background .35s ease,color .35s ease;
+  }
+  .nav-book-btn:hover{background:var(--fg);color:var(--bg);}
+  .nav-book-btn::after{display:none;}
+
+  .nav-toggle{
+    display:none;
+    width:44px;height:44px;
+    border:1px solid var(--line);
+    background:transparent;
+    position:relative;
+    z-index:1100;
+    flex-shrink:0;
+  }
+  .nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+    content:'';position:absolute;left:50%;top:50%;
+    width:20px;height:1px;background:var(--fg);
+    transform:translate(-50%,-50%);
+    transition:transform .3s ease, opacity .3s ease;
+  }
+  .nav-toggle span::before{transform:translateY(-6px);}
+  .nav-toggle span::after{transform:translateY(6px);}
+  .nav-toggle.open span{background:transparent;}
+  .nav-toggle.open span::before{transform:translateY(0) rotate(45deg);}
+  .nav-toggle.open span::after{transform:translateY(0) rotate(-45deg);}
+
+  .mobile-nav{
+    position:fixed;inset:0;z-index:1050;
+    background:var(--bg);
+    display:flex;flex-direction:column;justify-content:center;
+    gap:2rem;padding:2rem;
+    transform:translateY(-100%);
+    transition:transform .55s cubic-bezier(.2,1,.3,1);
+  }
+  .mobile-nav.open{transform:translateY(0);}
+  .mobile-nav a{
+    color:var(--fg);text-decoration:none;
+    font-family:'Bodoni Moda',serif;font-size:2rem;
+    border-bottom:1px solid var(--line);padding-bottom:1rem;
+  }
+  .mobile-nav .m-book{color:var(--magenta);font-style:italic;}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(255,46,136,0.18), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(212,175,55,0.14), transparent 55%),
+      var(--bg);
+  }
+  .hero-noise{
+    position:absolute;inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:3px 3px;
+    pointer-events:none;
+    opacity:.5;
+  }
+  .hero-inner{
+    position:relative;z-index:2;
+    padding:0 clamp(1.2rem,5vw,3.5rem);
+  }
+  .eyebrow{
+    font-size:.78rem;letter-spacing:.35em;text-transform:uppercase;
+    color:var(--gold-soft);
+    display:flex;align-items:center;gap:.9rem;margin-bottom:1.6rem;
+  }
+  .eyebrow::before{content:'';width:40px;height:1px;background:var(--gold-soft);}
+
+  .kinetic{
+    font-size:clamp(3.2rem, 11vw, 9.5rem);
+    line-height:.92;
+    letter-spacing:-.01em;
+    display:block;
+  }
+  .kinetic .line{overflow:hidden;display:block;}
+  .kinetic .line span{
+    display:inline-block;
+    transform:translateY(115%);
+    animation:riseUp 1s cubic-bezier(.2,1,.3,1) forwards;
+  }
+  .kinetic .italic{font-style:italic;color:var(--magenta);font-weight:400;}
+
+  .hero-sub{
+    max-width:480px;margin-top:2rem;
+    color:var(--muted);font-weight:300;font-size:1.02rem;line-height:1.7;
+    opacity:0;animation:fadeUp 1s ease forwards 1.1s;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  .hero-cta{
+    margin-top:2.6rem;display:flex;gap:1.2rem;flex-wrap:wrap;
+    opacity:0;animation:fadeUp 1s ease forwards 1.3s;
+  }
+
+  .btn{
+    position:relative;
+    display:inline-flex;align-items:center;gap:.6rem;
+    padding:1rem 2rem;
+    font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
+    text-decoration:none;color:var(--bg);
+    background:var(--fg);
+    border:1px solid var(--fg);
+    overflow:hidden;
+    transition:color .4s ease;
+  }
+  .btn::before{
+    content:'';position:absolute;inset:0;
+    background:var(--magenta);
+    transform:translateX(-101%);
+    transition:transform .45s cubic-bezier(.2,1,.3,1);
+    z-index:0;
+  }
+  .btn span{position:relative;z-index:1;}
+  .btn:hover{color:var(--fg);}
+  .btn:hover::before{transform:translateX(0);}
+  .btn.ghost{background:transparent;color:var(--fg);}
+  .btn.ghost::before{background:var(--fg);}
+  .btn.ghost:hover{color:var(--bg);}
+
+  .scroll-cue{
+    position:absolute;bottom:2.4rem;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:.6rem;
+    color:var(--muted);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+    z-index:2;
+  }
+  .scroll-cue .stick{
+    width:1px;height:46px;background:var(--line);position:relative;overflow:hidden;
+  }
+  .scroll-cue .stick::after{
+    content:'';position:absolute;top:-100%;left:0;width:100%;height:100%;
+    background:var(--gold);
+    animation:cueDrop 1.8s ease-in-out infinite;
+  }
+  @keyframes cueDrop{
+    0%{top:-100%;} 60%{top:100%;} 100%{top:100%;}
+  }
+
+  /* marquee strip */
+  .marquee-strip{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:1.1rem 0;
+    background:var(--bg2);
+    position:relative;z-index:2;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+  .marquee-track{
+    display:inline-flex;
+    animation:marquee 26s linear infinite;
+  }
+  .marquee-track span{
+    font-family:'Bodoni Moda',serif;
+    font-size:1.1rem;
+    padding:0 2.2rem;
+    color:var(--muted);
+    display:inline-flex;align-items:center;gap:2.2rem;
+  }
+  .marquee-track span i{
+    font-style:normal;color:var(--gold);
+  }
+  @keyframes marquee{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  /* ============ SECTION GENERIC ============ */
+  section{
+    position:relative;
+    padding:8rem clamp(1.2rem,5vw,3.5rem);
+    scroll-margin-top:90px;
+  }
+  .section-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    gap:2rem;margin-bottom:4rem;flex-wrap:wrap;
+  }
+  .section-head .tag{
+    font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-soft);
+    margin-bottom:1rem;display:block;
+  }
+  .section-head h2{
+    font-size:clamp(2.2rem,5vw,4rem);
+    line-height:1.05;
+  }
+  .section-head p{
+    max-width:360px;color:var(--muted);font-weight:300;line-height:1.7;
+  }
+
+  .reveal{
+    opacity:0;transform:translateY(50px);
+    transition:opacity .9s cubic-bezier(.2,1,.3,1), transform .9s cubic-bezier(.2,1,.3,1);
+  }
+  .reveal.in{opacity:1;transform:translateY(0);}
+  .reveal-clip{
+    clip-path:inset(0 0 100% 0);
+    transition:clip-path 1.1s cubic-bezier(.2,1,.3,1);
+  }
+  .reveal-clip.in{clip-path:inset(0 0 0% 0);}
+
+  /* ============ ABOUT ============ */
+  .about{background:var(--bg);}
+  .about-grid{
+    display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:center;
+  }
+  .about-text p{
+    font-size:1.4rem;font-weight:300;line-height:1.65;color:var(--fg);
+  }
+  .about-text .drop{
+    font-family:'Bodoni Moda',serif;font-style:italic;color:var(--magenta);font-size:2.4rem;
+  }
+  .stat-row{
+    display:flex;gap:3rem;margin-top:3rem;flex-wrap:wrap;
+  }
+  .stat h3{
+    font-size:2.6rem;color:var(--gold-soft);
+  }
+  .stat span{
+    display:block;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.4rem;
+  }
+  .about-visual{
+    aspect-ratio:4/5;
+    border:1px solid var(--line);
+    position:relative;
+    background:
+      linear-gradient(160deg, var(--bg3), var(--bg2));
+    overflow:hidden;
+  }
+  .about-visual::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(255,46,136,.35), transparent 60%),
+               radial-gradient(circle at 80% 85%, rgba(212,175,55,.3), transparent 55%);
+    animation:blob 8s ease-in-out infinite alternate;
+  }
+  @keyframes blob{
+    0%{transform:scale(1) translate(0,0);}
+    100%{transform:scale(1.15) translate(-2%,3%);}
+  }
+  .about-visual .frame-text{
+    position:absolute;bottom:1.4rem;left:1.4rem;right:1.4rem;
+    font-family:'Bodoni Moda',serif;font-style:italic;font-size:1.3rem;
+    color:var(--fg);z-index:1;
+  }
+
+  /* ============ SERVICES ============ */
+  .services{background:var(--bg2);}
+  .tabs{
+    display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:3.4rem;
+  }
+  .tab-btn{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    padding:.7rem 1.4rem;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
+    transition:all .35s ease;
+  }
+  .tab-btn.active, .tab-btn:hover{
+    background:var(--fg);color:var(--bg);border-color:var(--fg);
+  }
+
+  .service-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;
+  }
+  .service-panel{display:none;}
+  .service-panel.active{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;
+    animation:panelIn .6s ease;}
+  @keyframes panelIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+  .s-card{
+    position:relative;
+    height:220px;
+    border:1px solid var(--line);
+    perspective:1200px;
+  }
+  .s-card-inner{
+    position:relative;width:100%;height:100%;
+    transition:transform .7s cubic-bezier(.2,1,.3,1);
+    transform-style:preserve-3d;
+  }
+  .s-card:hover .s-card-inner{transform:rotateY(180deg);}
+  .s-face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:1.6rem;
+  }
+  .s-front{
+    background:var(--bg);
+  }
+  .s-front .num{color:var(--muted);font-size:.75rem;letter-spacing:.1em;}
+  .s-front h3{font-size:1.35rem;font-weight:500;line-height:1.25;}
+  .s-front .hint{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-soft);}
+  .s-back{
+    background:var(--magenta);
+    transform:rotateY(180deg);
+    color:var(--fg);
+    align-items:flex-start;
+  }
+  .s-back .price{
+    font-family:'Bodoni Moda',serif;font-size:2.1rem;
+  }
+  .s-back .price small{font-size:1rem;font-weight:300;}
+  .s-back .desc{font-size:.85rem;font-weight:300;line-height:1.5;color:rgba(255,255,255,.85);}
+  .s-back .book{
+    font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+    border-bottom:1px solid var(--fg);padding-bottom:2px;align-self:flex-start;
+  }
+
+  /* ============ BRIDAL SPOTLIGHT ============ */
+  .bridal{
+    background:linear-gradient(180deg, var(--bg) 0%, #140a19 100%);
+    text-align:center;
+    overflow:hidden;
+  }
+  .bridal h2{
+    font-size:clamp(2.6rem,7vw,6rem);
+    font-style:italic;
+    background:linear-gradient(120deg, var(--gold-soft), var(--blush) 50%, var(--gold-soft));
+    background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 5s linear infinite;
+  }
+  @keyframes shine{to{background-position:200% center;}}
+  .bridal p.lead{
+    max-width:560px;margin:1.6rem auto 3rem;color:var(--muted);font-weight:300;line-height:1.7;
+  }
+  .bridal-packages{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1.6rem;
+    max-width:900px;margin:0 auto;text-align:left;
+  }
+  .pkg{
+    border:1px solid var(--line);padding:2.2rem;
+    transition:border-color .4s ease, transform .4s ease, background .4s ease;
+  }
+  .pkg:hover{border-color:var(--gold);transform:translateY(-6px);background:rgba(212,175,55,0.05);}
+  .pkg h4{font-size:1.4rem;margin-bottom:.6rem;}
+  .pkg .price{font-family:'Bodoni Moda',serif;color:var(--gold-soft);font-size:1.8rem;margin-bottom:1rem;}
+  .pkg ul{list-style:none;color:var(--muted);font-size:.88rem;line-height:2;font-weight:300;}
+  .pkg ul li::before{content:'— ';color:var(--magenta);}
+
+  /* ============ TESTIMONIALS ============ */
+  .testimonials{background:var(--bg2);overflow:hidden;}
+  .t-track{
+    display:flex;gap:1.6rem;
+    animation:tmarquee 34s linear infinite;
+    width:max-content;
+  }
+  @keyframes tmarquee{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+  .t-card{
+    width:360px;flex-shrink:0;
+    border:1px solid var(--line);padding:2.2rem;background:var(--bg);
+  }
+  .t-card .stars{color:var(--gold);letter-spacing:.2em;margin-bottom:1rem;font-size:.9rem;}
+  .t-card p{font-weight:300;color:var(--fg);line-height:1.7;font-size:.95rem;}
+  .t-card .who{margin-top:1.4rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+  /* ============ CTA ============ */
+  .cta-final{
+    text-align:center;
+    background:var(--bg);
+  }
+  .cta-final h2{
+    font-size:clamp(2.4rem,7vw,5.5rem);
+    line-height:1.05;
+  }
+  .cta-final h2 em{color:var(--magenta);font-style:italic;}
+  .cta-final .btn{margin-top:2.4rem;}
+  .cta-final .contact-line{
+    margin-top:3rem;color:var(--muted);font-size:.9rem;letter-spacing:.05em;
+  }
+  .cta-final .contact-line a{color:var(--gold-soft);text-decoration:none;}
+
+  /* ============ FOOTER ============ */
+  footer{
+    border-top:1px solid var(--line);
+    padding:3.5rem clamp(1.2rem,5vw,3.5rem) 2.2rem;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:2rem;
+  }
+  footer .f-logo{font-family:'Bodoni Moda',serif;font-size:1.6rem;letter-spacing:.1em;}
+  footer .f-col h5{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:1rem;}
+  footer .f-col p, footer .f-col a{
+    display:block;color:var(--muted);font-size:.88rem;font-weight:300;line-height:2;text-decoration:none;
+  }
+  footer .f-col a:hover{color:var(--fg);}
+  footer .bottom{
+    width:100%;border-top:1px solid var(--line);margin-top:2rem;padding-top:1.4rem;
+    display:flex;justify-content:space-between;color:var(--muted);font-size:.75rem;flex-wrap:wrap;gap:.6rem;
+  }
+
+  /* ============ BOOKING MODAL ============ */
+  #bookOverlay{
+    position:fixed;inset:0;z-index:2000;
+    background:rgba(6,3,7,0.82);
+    backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    padding:1.5rem;
+    opacity:0;visibility:hidden;
+    transition:opacity .35s ease, visibility .35s ease;
+  }
+  #bookOverlay.open{opacity:1;visibility:visible;}
+  #bookModal{
+    width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+    background:var(--bg2);border:1px solid var(--line);
+    padding:2.6rem;position:relative;
+    transform:translateY(24px) scale(.98);
+    transition:transform .4s cubic-bezier(.2,1,.3,1);
+  }
+  #bookOverlay.open #bookModal{transform:translateY(0) scale(1);}
+  #bookModal h3{font-size:1.8rem;margin-bottom:.4rem;}
+  #bookModal .modal-sub{color:var(--muted);font-size:.88rem;font-weight:300;margin-bottom:1.8rem;}
+  #closeModal{
+    position:absolute;top:1.4rem;right:1.4rem;
+    width:34px;height:34px;border:1px solid var(--line);
+    background:transparent;color:var(--fg);font-size:1.1rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .field{margin-bottom:1.2rem;}
+  .field label{
+    display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold-soft);margin-bottom:.5rem;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;background:var(--bg);border:1px solid var(--line);
+    color:var(--fg);padding:.8rem 1rem;font-family:'Poppins',sans-serif;
+    font-size:.92rem;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none;border-color:var(--magenta);
+  }
+  .field textarea{resize:vertical;min-height:70px;}
+  .field-row{display:flex;gap:1rem;}
+  .field-row .field{flex:1;}
+  #bookForm .btn{width:100%;justify-content:center;margin-top:.6rem;border:1px solid var(--fg);}
+  .form-note{font-size:.75rem;color:var(--muted);margin-top:1rem;text-align:center;}
+  .form-success{
+    display:none;text-align:center;padding:1rem 0;
+  }
+  .form-success.show{display:block;}
+  .form-success .check{
+    width:56px;height:56px;border-radius:50%;border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;
+    font-size:1.5rem;color:var(--gold-soft);
+  }
+
+  @media(max-width:900px){
+    header{mix-blend-mode:normal;background:rgba(11,6,13,0.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+    nav ul{display:none;}
+    .nav-toggle{display:block;}
+    .about-grid{grid-template-columns:1fr;}
+    .service-grid, .service-panel.active{grid-template-columns:repeat(2,1fr);}
+    .bridal-packages{grid-template-columns:1fr;}
+  }
+  @media(max-width:600px){
+    .service-grid, .service-panel.active{grid-template-columns:1fr;}
+    section{padding:5.5rem 1.2rem;}
+  }
+
+  @media(prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="preloader">
+  <div class="pre-word">
+    <span style="animation-delay:.05s">B</span><span style="animation-delay:.1s">E</span><span style="animation-delay:.15s">A</span><span style="animation-delay:.2s">U</span><span style="animation-delay:.25s">T</span><span style="animation-delay:.3s">Y</span><span style="animation-delay:.35s;color:#ff2e88">X</span>
+  </div>
+  <div class="bar"></div>
+</div>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<canvas id="sparkle"></canvas>
+
+<header>
+  <a href="#top" class="logo hoverable">BEAUTY<em>X</em></a>
+  <nav>
+    <ul>
+      <li><a href="#about" class="hoverable">Studio</a></li>
+      <li><a href="#services" class="hoverable">Services</a></li>
+      <li><a href="#bridal" class="hoverable">Bridal</a></li>
+      <li><a href="#reviews" class="hoverable">Reviews</a></li>
+      <li><a href="#contact" class="hoverable">Visit</a></li>
+      <li><button class="nav-book-btn hoverable book-trigger">Book Now</button></li>
+    </ul>
+  </nav>
+  <button class="nav-toggle hoverable" id="navToggle" aria-label="Open menu"><span></span></button>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#about" class="hoverable m-link">Studio</a>
+  <a href="#services" class="hoverable m-link">Services</a>
+  <a href="#bridal" class="hoverable m-link">Bridal</a>
+  <a href="#reviews" class="hoverable m-link">Reviews</a>
+  <a href="#contact" class="hoverable m-link">Visit</a>
+  <a href="#" class="hoverable m-book book-trigger">Book Now →</a>
+</div>
+
+<section class="hero" id="top">
+  <div class="hero-noise"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">Lahore's Studio for Hair, Skin & Bridal Artistry</div>
+    <h1 class="kinetic">
+      <span class="line"><span>Beauty, rewritten</span></span>
+      <span class="line"><span class="italic">in real time.</span></span>
+    </h1>
+    <p class="hero-sub">BeautyX is where precision cutting, editorial makeup and skin science meet — a salon built for the way you actually want to look and feel, priced clearly, no surprises.</p>
+    <div class="hero-cta">
+      <button class="btn hoverable book-trigger"><span>Book an appointment</span></button>
+      <a href="#services" class="btn ghost hoverable"><span>See rate card</span></a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><div class="stick"></div></div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p><span class="drop">We</span> believe a salon visit should feel like a reset button — for your hair, your skin, and your ten minutes of actual quiet. Every service at BeautyX is built around technique first, trend second.</p>
+      <div class="stat-row">
+        <div class="stat"><h3>12+</h3><span>Years in craft</span></div>
+        <div class="stat"><h3>40+</h3><span>Services on the menu</span></div>
+        <div class="stat"><h3>9.4k</h3><span>Transformations</span></div>
+      </div>
+    </div>
+    <div class="about-visual reveal">
+      <div class="frame-text">"Not just a look — a signature."</div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="section-head reveal">
+    <div>
+      <span class="tag">The Rate Card</span>
+      <h2>Every service,<br>one honest price.</h2>
+    </div>
+    <p>All prices in Pakistani Rupees (PKR). Flip any card to see the rate. Packages and combos available on request.</p>
+  </div>
+
+  <div class="tabs reveal" id="tabs"></div>
+  <div id="panels"></div>
+</section>
+
+<section class="bridal" id="bridal">
+  <span class="tag" style="color:var(--gold-soft);letter-spacing:.3em;text-transform:uppercase;font-size:.78rem;">The Big Day</span>
+  <h2 class="reveal">Bridal, done properly.</h2>
+  <p class="lead reveal">From the first pre-bridal glow session to the final touch-up before your entrance — our bridal team plans your whole timeline with you.</p>
+  <div class="bridal-packages reveal">
+    <div class="pkg">
+      <h4>Pre-Bridal Glow</h4>
+      <div class="price">Rs. 20,000</div>
+      <ul>
+        <li>3 sessions — facial, hair spa, body polish</li>
+        <li>Threading & waxing included</li>
+        <li>Manicure-pedicure</li>
+      </ul>
+    </div>
+    <div class="pkg">
+      <h4>Full Bridal Package</h4>
+      <div class="price">Rs. 45,000</div>
+      <ul>
+        <li>HD Bridal Makeup & hairstyling</li>
+        <li>Dupatta setting & draping</li>
+        <li>Trial session included</li>
+        <li>One touch-up artist on the day</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" id="reviews">
+  <div class="section-head reveal">
+    <div>
+      <span class="tag">Word of Mouth</span>
+      <h2>Clients on repeat.</h2>
+    </div>
+  </div>
+  <div class="t-track" id="tTrack"></div>
+</section>
+
+<section class="cta-final" id="contact">
+  <h2 class="reveal">Your next look is<br><em>one call away.</em></h2>
+  <button class="btn hoverable book-trigger"><span>Book an appointment</span></button>
+  <div class="contact-line">
+    <a href="tel:+924212345678" class="hoverable">Call: 042 1234 5678</a> &nbsp;·&nbsp;
+    <a href="https://wa.me/924212345678" target="_blank" rel="noopener" class="hoverable">WhatsApp us</a> &nbsp;·&nbsp;
+    <a href="https://instagram.com/beautyx.salon" target="_blank" rel="noopener" class="hoverable">@beautyx.salon</a>
+    <br>MM Alam Road, Gulberg III, Lahore &nbsp;·&nbsp; Open daily 10am–8pm
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">BEAUTY<em style="color:var(--magenta);font-style:normal;">X</em></div>
+  <div class="f-col">
+    <h5>Studio</h5>
+    <a href="#about" class="hoverable">Our story</a>
+    <a href="#services" class="hoverable">Rate card</a>
+    <a href="#bridal" class="hoverable">Bridal</a>
+  </div>
+  <div class="f-col">
+    <h5>Visit</h5>
+    <p>MM Alam Road, Gulberg III</p>
+    <p>Lahore, Pakistan</p>
+    <p>10:00 AM – 8:00 PM, daily</p>
+  </div>
+  <div class="f-col">
+    <h5>Contact</h5>
+    <a href="tel:+924212345678" class="hoverable">042 1234 5678</a>
+    <a href="https://wa.me/924212345678" target="_blank" rel="noopener" class="hoverable">WhatsApp</a>
+    <a href="mailto:hello@beautyx.pk" class="hoverable">hello@beautyx.pk</a>
+    <a href="https://instagram.com/beautyx.salon" target="_blank" rel="noopener" class="hoverable">Instagram</a>
+  </div>
+  <div class="bottom">
+    <span>© 2026 BeautyX Salon. All rights reserved.</span>
+    <span>Prices in PKR, subject to consultation.</span>
+  </div>
+</footer>
+
+<div id="bookOverlay">
+  <div id="bookModal">
+    <button id="closeModal" class="hoverable" aria-label="Close">×</button>
+    <div id="formView">
+      <h3>Book your appointment</h3>
+      <p class="modal-sub">Fill this in and we'll open a prefilled WhatsApp message to our front desk — confirm your slot there in seconds.</p>
+      <form id="bookForm">
+        <div class="field">
+          <label for="bName">Full name</label>
+          <input type="text" id="bName" required placeholder="Your name">
+        </div>
+        <div class="field">
+          <label for="bPhone">Phone number</label>
+          <input type="tel" id="bPhone" required placeholder="03xx xxxxxxx">
+        </div>
+        <div class="field">
+          <label for="bService">Service</label>
+          <select id="bService" required>
+            <option value="" disabled selected>Select a service</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="bDate">Preferred date</label>
+            <input type="date" id="bDate" required>
+          </div>
+          <div class="field">
+            <label for="bTime">Preferred time</label>
+            <input type="time" id="bTime" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="bNote">Notes (optional)</label>
+          <textarea id="bNote" placeholder="Anything we should know?"></textarea>
+        </div>
+        <button type="submit" class="btn hoverable"><span>Send booking request</span></button>
+        <p class="form-note">This opens WhatsApp with your details filled in — nothing is sent until you tap send there.</p>
+      </form>
+    </div>
+    <div class="form-success" id="formSuccess">
+      <div class="check">✓</div>
+      <h3>Almost there</h3>
+      <p class="modal-sub">WhatsApp should have opened in a new tab with your request ready to send. Didn't open? <a href="#" id="waFallback" class="hoverable" style="color:var(--gold-soft);">Tap here instead</a>.</p>
+      <button class="btn ghost hoverable" id="bookAnother" style="width:100%;"><span>Book another</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ SERVICE DATA ============ */
+const serviceData = {
+  "Hair": [
+    ["Haircut & Styling","Precision cut finished with a full blow-dry style.","1,500"],
+    ["Hair Wash & Blow Dry","Deep cleanse wash with a salon-finish blow dry.","1,200"],
+    ["Global Hair Colour","Full head single-process colour application.","6,000"],
+    ["Highlights / Balayage","Hand-painted or foiled dimension, per session.","8,500"],
+    ["Keratin Treatment","Smoothing treatment for frizz-free hair, up to 4 months.","12,000"],
+    ["Hair Spa & Repair","Deep conditioning ritual for damaged, dry hair.","3,000"],
+    ["Hair Extensions","Clip-in or tape-in, price starting from.","15,000"],
+    ["Kids Haircut","For children under 12.","900"],
+    ["Beard Trim & Shape","Precision beard shaping and line-up.","700"]
+  ],
+  "Skin & Facials": [
+    ["Classic Facial","Cleanse, exfoliate, mask and glow finish.","2,500"],
+    ["Gold Radiance Facial","24k gold-infused brightening facial.","4,500"],
+    ["HydraFacial","Medical-grade deep hydration and extraction.","7,000"],
+    ["Whitening Facial","Tone-correcting facial for even, brighter skin.","3,500"],
+    ["Anti-Aging Facial","Collagen-boosting facial with peptide serum.","5,500"],
+    ["Acne Clarifying Facial","Deep-pore treatment for acne-prone skin.","3,800"],
+    ["Under-Eye Treatment","Targeted de-puffing and brightening.","1,800"]
+  ],
+  "Makeup": [
+    ["Party Makeup","Full glam for events and celebrations.","5,000"],
+    ["HD Makeup","High-definition, camera-ready finish.","8,000"],
+    ["Engagement Makeup","Statement look with hairstyling included.","15,000"],
+    ["Bridal Makeup (Day)","Full bridal glam for daytime functions.","20,000"],
+    ["Bridal Makeup (Main Event)","Signature bridal look, premium products.","25,000"],
+    ["Airbrush Makeup Add-on","Long-wear airbrush finish, add to any look.","3,000"]
+  ],
+  "Nails": [
+    ["Classic Manicure","Shape, cuticle care, polish.","1,200"],
+    ["Classic Pedicure","Soak, scrub, shape, polish.","1,500"],
+    ["Gel Polish (Hands)","Chip-free gel colour, hands.","1,800"],
+    ["Gel Polish (Feet)","Chip-free gel colour, feet.","2,000"],
+    ["Nail Extensions","Acrylic or gel extensions, full set.","3,500"],
+    ["Nail Art (per nail)","Custom hand-painted detail.","250"]
+  ],
+  "Waxing & Threading": [
+    ["Eyebrow Threading","Precision brow shaping.","300"],
+    ["Upper Lip Threading","Clean, quick upper lip shaping.","150"],
+    ["Full Face Threading","Complete facial hair removal.","900"],
+    ["Full Arms Wax","Smooth arms, elbow to fingertips.","1,000"],
+    ["Full Legs Wax","Smooth legs, full length.","1,500"],
+    ["Underarms Wax","Quick and gentle underarm wax.","500"],
+    ["Full Body Wax","Complete body waxing session.","4,000"]
+  ],
+  "Spa & Massage": [
+    ["Body Massage (60 min)","Full-body relaxation massage.","4,000"],
+    ["Aromatherapy Massage","Essential-oil massage for deep relaxation.","5,000"],
+    ["Body Polishing","Full-body exfoliation and moisture treatment.","3,500"],
+    ["Foot Reflexology (30 min)","Pressure-point foot massage therapy.","2,000"]
+  ]
+};
+
+const grid = document.getElementById('panels');
+const tabsWrap = document.getElementById('tabs');
+const bServiceSelect = document.getElementById('bService');
+for(const cat in serviceData){
+  const optGroup = document.createElement('optgroup');
+  optGroup.label = cat;
+  serviceData[cat].forEach(s=>{
+    const opt = document.createElement('option');
+    opt.value = s[0];
+    opt.textContent = `${s[0]} — Rs. ${s[2]}`;
+    optGroup.appendChild(opt);
+  });
+  bServiceSelect.appendChild(optGroup);
+}
+let i = 0;
+for(const cat in serviceData){
+  const tabBtn = document.createElement('button');
+  tabBtn.className = 'tab-btn hoverable' + (i===0?' active':'');
+  tabBtn.textContent = cat;
+  tabBtn.dataset.target = 'panel-'+i;
+  tabsWrap.appendChild(tabBtn);
+
+  const panel = document.createElement('div');
+  panel.className = 'service-panel' + (i===0?' active':'');
+  panel.id = 'panel-'+i;
+
+  serviceData[cat].forEach((s,idx)=>{
+    const card = document.createElement('div');
+    card.className = 's-card hoverable';
+    card.innerHTML = `
+      <div class="s-card-inner">
+        <div class="s-face s-front">
+          <span class="num">0${idx+1}</span>
+          <h3>${s[0]}</h3>
+          <span class="hint">Hover for rate →</span>
+        </div>
+        <div class="s-face s-back">
+          <div class="price">Rs. ${s[2]}</div>
+          <p class="desc">${s[1]}</p>
+          <span class="book hoverable book-trigger" data-service="${s[0]}">Book this service →</span>
+        </div>
+      </div>`;
+    panel.appendChild(card);
+  });
+  grid.appendChild(panel);
+  i++;
+}
+tabsWrap.addEventListener('click', e=>{
+  const btn = e.target.closest('.tab-btn');
+  if(!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.service-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.target).classList.add('active');
+});
+
+/* marquee content */
+const cats = Object.keys(serviceData);
+const track = document.getElementById('marqueeTrack');
+let marqueeHTML = '';
+for(let r=0;r<2;r++){
+  cats.forEach(c=>{ marqueeHTML += `<span>${c} <i>✦</i></span>`; });
+}
+track.innerHTML = marqueeHTML;
+
+/* testimonials */
+const reviews = [
+  ["★★★★★","Best keratin treatment I've had in Lahore — my hair hasn't been this manageable in years.","Areeba K."],
+  ["★★★★★","Did my full bridal package here. The team planned every session around my wedding week perfectly.","Hania M."],
+  ["★★★★★","The HydraFacial genuinely changed my skin. Booked my next one before I even left.","Sana R."],
+  ["★★★★★","Transparent pricing, no upselling. Rare for a salon this good.","Zara F."],
+  ["★★★★★","My go-to for gel manicures. Clean space, always on time.","Mahnoor A."]
+];
+const tTrack = document.getElementById('tTrack');
+let tHTML = '';
+for(let r=0;r<2;r++){
+  reviews.forEach(rv=>{
+    tHTML += `<div class="t-card"><div class="stars">${rv[0]}</div><p>"${rv[1]}"</p><div class="who">${rv[2]}</div></div>`;
+  });
+}
+tTrack.innerHTML = tHTML;
+
+/* ============ PRELOADER OUT ============ */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('preloader').classList.add('done');
+  }, 1400);
+});
+
+/* ============ CUSTOM CURSOR ============ */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my;
+document.addEventListener('mousemove', e=>{
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx+'px'; dot.style.top = my+'px';
+});
+(function loop(){
+  rx += (mx-rx)*0.16; ry += (my-ry)*0.16;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(loop);
+})();
+function bindHoverables(){
+  document.querySelectorAll('.hoverable, a, button, .s-card, .tab-btn').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>ring.classList.add('hover'));
+    el.addEventListener('mouseleave', ()=>ring.classList.remove('hover'));
+  });
+}
+bindHoverables();
+setTimeout(bindHoverables, 300); // catch dynamically injected cards
+
+/* sparkle trail */
+const canvas = document.getElementById('sparkle');
+const ctx = canvas.getContext('2d');
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize(); addEventListener('resize', resize);
+let particles = [];
+document.addEventListener('mousemove', e=>{
+  for(let k=0;k<2;k++){
+    particles.push({
+      x:e.clientX, y:e.clientY,
+      vx:(Math.random()-0.5)*1.4, vy:(Math.random()-0.5)*1.4,
+      life:1, size:Math.random()*2+1,
+      color: Math.random()>0.5 ? '212,175,55' : '255,46,136'
+    });
+  }
+});
+function renderParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.life-=0.02;
+    ctx.globalAlpha = Math.max(p.life,0);
+    ctx.fillStyle = `rgba(${p.color},1)`;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fill();
+  });
+  particles = particles.filter(p=>p.life>0);
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(renderParticles);
+}
+renderParticles();
+
+/* ============ SCROLL REVEAL ============ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      io.unobserve(entry.target);
+    }
+  });
+}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============ MOBILE NAV ============ */
+const navToggle = document.getElementById('navToggle');
+const mobileNav = document.getElementById('mobileNav');
+navToggle.addEventListener('click', ()=>{
+  navToggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+document.querySelectorAll('.m-link').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    navToggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+  });
+});
+
+/* ============ BOOKING MODAL ============ */
+const bookOverlay = document.getElementById('bookOverlay');
+const closeModal = document.getElementById('closeModal');
+const bookForm = document.getElementById('bookForm');
+const formView = document.getElementById('formView');
+const formSuccess = document.getElementById('formSuccess');
+const SALON_WHATSAPP = '924212345678'; // update to the salon's real WhatsApp number
+
+function openBooking(serviceName){
+  bookOverlay.classList.add('open');
+  mobileNav.classList.remove('open');
+  navToggle.classList.remove('open');
+  formView.style.display = 'block';
+  formSuccess.classList.remove('show');
+  if(serviceName){
+    const opt = [...bServiceSelect.options].find(o=>o.value===serviceName);
+    if(opt) bServiceSelect.value = serviceName;
+  }
+  document.body.style.overflow = 'hidden';
+}
+function closeBooking(){
+  bookOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('click', e=>{
+  const trigger = e.target.closest('.book-trigger');
+  if(trigger){
+    e.preventDefault();
+    openBooking(trigger.dataset.service || '');
+  }
+});
+closeModal.addEventListener('click', closeBooking);
+bookOverlay.addEventListener('click', e=>{ if(e.target===bookOverlay) closeBooking(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeBooking(); });
+
+let lastWaLink = '';
+bookForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = document.getElementById('bName').value.trim();
+  const phone = document.getElementById('bPhone').value.trim();
+  const service = document.getElementById('bService').value;
+  const date = document.getElementById('bDate').value;
+  const time = document.getElementById('bTime').value;
+  const note = document.getElementById('bNote').value.trim();
+
+  const msgLines = [
+    `Hi BeautyX! I'd like to book an appointment.`,
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Service: ${service}`,
+    `Preferred date: ${date}`,
+    `Preferred time: ${time}`,
+  ];
+  if(note) msgLines.push(`Notes: ${note}`);
+  const message = encodeURIComponent(msgLines.join('\n'));
+  lastWaLink = `https://wa.me/${SALON_WHATSAPP}?text=${message}`;
+
+  window.open(lastWaLink, '_blank');
+
+  formView.style.display = 'none';
+  formSuccess.classList.add('show');
+  document.getElementById('waFallback').href = lastWaLink;
+  bindHoverables();
+});
+document.getElementById('bookAnother').addEventListener('click', ()=>{
+  bookForm.reset();
+  formSuccess.classList.remove('show');
+  formView.style.display = 'block';
+});
+
+/* ============ IN-PAGE ANCHOR SCROLLING ============ */
+/* Prevent real navigation for same-page links (fixes previews/sandboxes
+   that treat any <a href="#..."> click as leaving the page) */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const href = a.getAttribute('href');
+    if(href.length>1){
+      const target = document.querySelector(href);
+      if(target){
+        e.preventDefault();
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        history.replaceState(null, '', href);
+      }
+    } else {
+      e.preventDefault();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  });
+});
+
+/* card tilt on mousemove */
+document.addEventListener('mousemove', e=>{
+  document.querySelectorAll('.s-card').forEach(card=>{
+    const r = card.getBoundingClientRect();
+    if(e.clientX>r.left && e.clientX<r.right && e.clientY>r.top && e.clientY<r.bottom){
+      const px = (e.clientX - r.left)/r.width - 0.5;
+      const py = (e.clientY - r.top)/r.height - 0.5;
+      card.style.transform = `rotateX(${py*-6}deg) rotateY(${px*6}deg)`;
+    } else {
+      card.style.transform = '';
+    }
+  });
+});
+</script>
+</body>
+</html>
